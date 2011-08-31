@@ -114,7 +114,12 @@ public class SubmitProjectHandler extends AbstractHandler {
 		try {
 			ZipFile zipFile = createZipFile(project);
 			
-			UsernamePasswordDialog dialog = new UsernamePasswordDialog(window.getShell());
+			UsernamePasswordDialog dialog = new UsernamePasswordDialog(
+					window.getShell(),
+					submitProperties.getProperty("projectNumber"),
+					submitProperties.getProperty("courseName"),
+					submitProperties.getProperty("semester"));
+			
 			int rc = dialog.open();
 			
 			if (rc == IDialogConstants.OK_ID) {

@@ -13,7 +13,6 @@ Publisher: Manning
 package edu.ycp.cs.marmoset.uploader.ui;
 
 import org.eclipse.jface.dialogs.Dialog;
-import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
@@ -26,12 +25,19 @@ import org.eclipse.swt.widgets.Text;
 public class UsernamePasswordDialog extends Dialog {
 //	private static final int RESET_ID = IDialogConstants.NO_TO_ALL_ID + 1;
 
+	private String projectNumber;
+	private String courseName;
+	private String semester;
+	private Label projectAndCourseDescription;
+	private Label message;
 	private Text usernameField;
-
 	private Text passwordField;
 
-	public UsernamePasswordDialog(Shell parentShell) {
+	public UsernamePasswordDialog(Shell parentShell, String projectNumber, String courseName, String semester) {
 		super(parentShell);
+		this.projectNumber = projectNumber;
+		this.courseName = courseName;
+		this.semester = semester;
 	}
 	
 	public String getUsername() {
@@ -48,11 +54,23 @@ public class UsernamePasswordDialog extends Dialog {
 		GridLayout layout = (GridLayout) comp.getLayout();
 		layout.numColumns = 2;
 
+		GridData data;
+		
+		projectAndCourseDescription = new Label(comp, SWT.CENTER);
+		projectAndCourseDescription.setText("Submitting project " + projectNumber + " for course " + courseName + ", " + semester);
+		data = new GridData(GridData.FILL, GridData.FILL, true, true, 2, 1);
+		projectAndCourseDescription.setLayoutData(data);
+		
+		message = new Label(comp, SWT.LEFT);
+		message.setText("Please enter your Marmoset username and password.");
+		data = new GridData(GridData.FILL, GridData.FILL, true, true, 2, 1);
+		message.setLayoutData(data);
+
 		Label usernameLabel = new Label(comp, SWT.RIGHT);
 		usernameLabel.setText("Username: ");
 
 		usernameField = new Text(comp, SWT.SINGLE);
-		GridData data = new GridData(GridData.FILL_HORIZONTAL);
+		data = new GridData(GridData.FILL_HORIZONTAL);
 		usernameField.setLayoutData(data);
 
 		Label passwordLabel = new Label(comp, SWT.RIGHT);
@@ -64,18 +82,10 @@ public class UsernamePasswordDialog extends Dialog {
 
 		return comp;
 	}
-
-	protected void createButtonsForButtonBar(Composite parent) {
-		super.createButtonsForButtonBar(parent);
-		//createButton(parent, RESET_ID, "Reset All", false);
-	}
-
-//	protected void buttonPressed(int buttonId) {
-//		if (buttonId == RESET_ID) {
-//			usernameField.setText("");
-//			passwordField.setText("");
-//		} else {
-//			super.buttonPressed(buttonId);
-//		}
-//	}
+	
+	@Override
+		protected void configureShell(Shell newShell) {
+			super.configureShell(newShell);
+			newShell.setText("Enter Marmoset username/password");
+		}
 }
