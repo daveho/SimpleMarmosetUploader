@@ -14,6 +14,7 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 import java.util.zip.ZipOutputStream;
 
+import org.apache.commons.httpclient.methods.PostMethod;
 import org.eclipse.core.commands.AbstractHandler;
 import org.eclipse.core.commands.ExecutionEvent;
 import org.eclipse.core.commands.ExecutionException;
@@ -24,12 +25,16 @@ import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.core.runtime.IPath;
+import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
+import org.eclipse.swt.SWT;
 import org.eclipse.ui.ISelectionService;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.handlers.HandlerUtil;
+
+import edu.ycp.cs.marmoset.uploader.ui.UsernamePasswordDialog;
 
 /**
  * Command handler for Marmoset project submission.
@@ -108,17 +113,21 @@ public class SubmitProjectHandler extends AbstractHandler {
 		// OK, .submit file is valid.  Attempt the submission.
 		try {
 			ZipFile zipFile = createZipFile(project);
+			
+			UsernamePasswordDialog dialog = new UsernamePasswordDialog(window.getShell());
+			int rc = dialog.open();
+			
+			if (rc == IDialogConstants.OK_ID) {
+				MessageDialog.openInformation(
+						window.getShell(),
+						"SimpleMarmosetUploader",
+						"Found " + selectedProjects.size() + " selected projects");
+			}
 		} catch (IOException e) {
 			throw new ExecutionException("Could not create zip file of project", e);
 		} catch (CoreException e) {
 			throw new ExecutionException("Could not create zip file of project", e);
 		}
-		
-		
-		MessageDialog.openInformation(
-				window.getShell(),
-				"SimpleMarmosetUploader",
-				"Found " + selectedProjects.size() + " selected projects");
 		
 		return null;
 	}
@@ -141,7 +150,6 @@ public class SubmitProjectHandler extends AbstractHandler {
 	
 	private ZipFile createZipFile(IProject project) throws IOException, CoreException {
 		File tempFile = File.createTempFile("marmosetSubmit", ".zip");
-		//tempFile.deleteOnExit();
 		
 		ZipOutputStream out = null;
 		
