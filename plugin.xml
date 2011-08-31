@@ -71,6 +71,24 @@
                commandId="edu.ycp.cs.marmoset.uploader.commands.SubmitProjectCommand"
                label="Submit project..."
                style="push">
+            <visibleWhen
+                  checkEnabled="false">
+               <with
+                     variable="activeMenuSelection">
+                  <iterate
+                        ifEmpty="false"
+                        operator="or">
+                        <!--
+                     <adapt
+                           type="org.eclipse.jdt.core.ICompilationUnit">
+                     </adapt>
+                     -->
+                     <adapt
+                           type="org.eclipse.core.resources.IProject">
+                     </adapt>
+                  </iterate>
+               </with>
+            </visibleWhen>
          </command>
       </menuContribution>
    </extension>
