@@ -123,6 +123,9 @@ public class SubmitProjectHandler extends AbstractHandler {
 			int rc = dialog.open();
 			
 			if (rc == IDialogConstants.OK_ID) {
+				
+				sendZipFileToServer(submitProperties, zipFile, dialog.getUsername(), dialog.getPassword());
+				
 				MessageDialog.openInformation(
 						window.getShell(),
 						"SimpleMarmosetUploader",
@@ -137,7 +140,7 @@ public class SubmitProjectHandler extends AbstractHandler {
 		return null;
 	}
 
-	public List<IProject> getSelectedProjects(IStructuredSelection selection) {
+	private List<IProject> getSelectedProjects(IStructuredSelection selection) {
 		List<IProject> selectedProjects = new ArrayList<IProject>();
 		List<?> selectedItems = selection.toList();
 		for (Object selectedItem : selectedItems) {
@@ -151,6 +154,30 @@ public class SubmitProjectHandler extends AbstractHandler {
 			}
 		}
 		return selectedProjects;
+	}
+
+	/**
+	 * Regex pattern matching the submit url in a .submit file.
+	 * All we care about is the hostname, since we will force submission via
+	 * the BlueJ upload servlet.
+	 */
+	private static final Pattern SUBMIT_URL_PATTERN =
+		Pattern.compile("^https?://([^/]+)/eclipse/SubmitProjectViaEclipse$");
+
+	private void checkSubmitProperties(Properties submitProperties) {
+		String[] required = new String[]{"projectNumber", "courseName", "semester", "submitURL"};
+		for (String prop : required) {
+			if (submitProperties.getProperty(prop) == null) {
+				throw new IllegalArgumentException("Missing required " + prop + " property");
+			}
+		}
+		
+		// Check submit URL
+		String submitUrl = submitProperties.getProperty("submitURL");
+		Matcher m = SUBMIT_URL_PATTERN.matcher(submitUrl);
+		if (!m.matches()) {
+			throw new IllegalArgumentException("Invalid submit URL: " + submitUrl);
+		}
 	}
 	
 	private ZipFile createZipFile(IProject project) throws IOException, CoreException {
@@ -197,27 +224,8 @@ public class SubmitProjectHandler extends AbstractHandler {
 		
 	}
 
-	/**
-	 * Regex pattern matching the submit url in a .submit file.
-	 * All we care about is the hostname, since we will force submission via
-	 * the BlueJ upload servlet.
-	 */
-	private static final Pattern SUBMIT_URL_PATTERN =
-		Pattern.compile("^https?://([^/]+)/eclipse/SubmitProjectViaEclipse$");
-
-	private void checkSubmitProperties(Properties submitProperties) {
-		String[] required = new String[]{"projectNumber", "courseName", "semester", "submitURL"};
-		for (String prop : required) {
-			if (submitProperties.getProperty(prop) == null) {
-				throw new IllegalArgumentException("Missing required " + prop + " property");
-			}
-		}
-		
-		// Check submit URL
-		String submitUrl = submitProperties.getProperty("submitURL");
-		Matcher m = SUBMIT_URL_PATTERN.matcher(submitUrl);
-		if (!m.matches()) {
-			throw new IllegalArgumentException("Invalid submit URL: " + submitUrl);
-		}
+	private void sendZipFileToServer(Properties submitProperties,
+			ZipFile zipFile, String username, String password) {
+		// TODO: implement
 	}
 }
