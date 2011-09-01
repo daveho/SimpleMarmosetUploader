@@ -3,6 +3,7 @@ package edu.ycp.cs.marmoset.uploader.handlers;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Dictionary;
 import java.util.List;
 import java.util.Properties;
 import java.util.regex.Matcher;
@@ -59,7 +60,16 @@ public abstract class Uploader {
 			parts.add(new StringPart("campusUID", username));
 			parts.add(new StringPart("password", password));
 			parts.add(new StringPart("submitClientTool", "SimpleMarmosetUploader"));
-			parts.add(new StringPart("submitClientVersion", Activator.getDefault().getBundle().getVersion().toString()));
+			
+			// You'd think getting the version of an Eclipse plugin would be easy,
+			// but it's not.
+			Dictionary<?, ?> dictionary = Activator.getDefault().getBundle().getHeaders();
+			String pluginVersion = (String) dictionary.get("Bundle-Version");
+			if (pluginVersion == null) {
+				pluginVersion = "unknown";
+			}
+			parts.add(new StringPart("submitClientVersion", pluginVersion));
+			
 			// All submit properties except the submit URL must be added as parameters
 			for (String prop : SubmitProjectHandler.REQUIRED_PROPERTIES) {
 				if (!prop.equals(SubmitProjectHandler.PROP_SUBMIT_URL)) {
