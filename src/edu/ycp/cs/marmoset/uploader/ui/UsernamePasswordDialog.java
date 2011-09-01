@@ -6,7 +6,7 @@ Matthew Scarpino, Stephen Holder, Stanford Ng, and Laurent Mihalkovic
 ISBN: 1932394273
 
 Publisher: Manning
-*/
+ */
 
 // Adapted for SimpleMarmosetUploader
 
@@ -23,8 +23,6 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 
 public class UsernamePasswordDialog extends Dialog {
-//	private static final int RESET_ID = IDialogConstants.NO_TO_ALL_ID + 1;
-
 	private String projectNumber;
 	private String courseName;
 	private String semester;
@@ -32,6 +30,8 @@ public class UsernamePasswordDialog extends Dialog {
 	private Label message;
 	private Text usernameField;
 	private Text passwordField;
+	private String username;
+	private String password;
 
 	public UsernamePasswordDialog(Shell parentShell, String projectNumber, String courseName, String semester) {
 		super(parentShell);
@@ -39,13 +39,13 @@ public class UsernamePasswordDialog extends Dialog {
 		this.courseName = courseName;
 		this.semester = semester;
 	}
-	
+
 	public String getUsername() {
-		return usernameField.getText();
+		return username;
 	}
-	
+
 	public String getPassword() {
-		return passwordField.getText();
+		return password;
 	}
 
 	protected Control createDialogArea(Composite parent) {
@@ -55,12 +55,12 @@ public class UsernamePasswordDialog extends Dialog {
 		layout.numColumns = 2;
 
 		GridData data;
-		
+
 		projectAndCourseDescription = new Label(comp, SWT.CENTER);
 		projectAndCourseDescription.setText("Submitting project " + projectNumber + " for course " + courseName + ", " + semester);
 		data = new GridData(GridData.FILL, GridData.FILL, true, true, 2, 1);
 		projectAndCourseDescription.setLayoutData(data);
-		
+
 		message = new Label(comp, SWT.LEFT);
 		message.setText("Please enter your Marmoset username and password.");
 		data = new GridData(GridData.FILL, GridData.FILL, true, true, 2, 1);
@@ -82,10 +82,17 @@ public class UsernamePasswordDialog extends Dialog {
 
 		return comp;
 	}
+
+	@Override
+	protected void configureShell(Shell newShell) {
+		super.configureShell(newShell);
+		newShell.setText("Enter Marmoset username/password");
+	}
 	
 	@Override
-		protected void configureShell(Shell newShell) {
-			super.configureShell(newShell);
-			newShell.setText("Enter Marmoset username/password");
-		}
+	protected void okPressed() {
+		this.username = usernameField.getText();
+		this.password = passwordField.getText();
+		super.okPressed();
+	}
 }
