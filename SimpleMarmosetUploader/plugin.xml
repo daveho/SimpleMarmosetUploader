@@ -30,7 +30,7 @@
             <command
                   commandId="edu.ycp.cs.marmoset.uploader.commands.SubmitProjectCommand"
                   icon="icons/upArrow-tiny.png"
-                  tooltip="Say hello world"
+                  tooltip="Submit project"
                   id="edu.ycp.cs.marmoset.uploader.toolbars.SubmitProjectCommand">
             </command>
          </toolbar>
