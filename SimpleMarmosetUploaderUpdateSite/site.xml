@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<site>
+   <feature url="features/edu.ycp.cs.marmoset.uploader.SimpleMarmosetUploaderFeature_1.0.0.jar" id="edu.ycp.cs.marmoset.uploader.SimpleMarmosetUploaderFeature" version="1.0.0">
+      <category name="edu.ycp.cs.marmoset.uploader.SimpleMarmosetUploaderCategory"/>
+   </feature>
+   <category-def name="edu.ycp.cs.marmoset.uploader.SimpleMarmosetUploaderCategory" label="Simple Marmoset Uploader">
+      <description>
+         Allows you to submit projects to Marmoset from within Eclipse.
+      </description>
+   </category-def>
+</site>
