@@ -58,7 +58,7 @@ public abstract class Uploader {
 			// Add form parameters
 			parts.add(new StringPart("campusUID", username));
 			parts.add(new StringPart("password", password));
-			parts.add(new StringPart("submitClientTool", Activator.PLUGIN_ID));
+			parts.add(new StringPart("submitClientTool", "SimpleMarmosetUploader"));
 			parts.add(new StringPart("submitClientVersion", Activator.getDefault().getBundle().getVersion().toString()));
 			// All submit properties except the submit URL must be added as parameters
 			for (String prop : SubmitProjectHandler.REQUIRED_PROPERTIES) {
