@@ -22,6 +22,11 @@ import org.apache.commons.httpclient.protocol.ProtocolSocketFactory;
 import edu.ycp.cs.marmoset.uploader.Activator;
 
 public abstract class Uploader {
+	
+	static {
+		Protocol easyHttps = new Protocol("https", (ProtocolSocketFactory) new EasySSLProtocolSocketFactory(), 8443);
+		Protocol.registerProtocol("https", easyHttps);
+	}
 
 	public static Result sendZipFileToServer(Properties submitProperties, File zipFile, String username, String password) throws HttpException, IOException {
 		PostMethod post = null;
@@ -71,10 +76,12 @@ public abstract class Uploader {
 			
 			client = new HttpClient();
 			
-			// Configure for easy SSL (allow use of self-signed certificates)
-			Protocol easyHttps = new Protocol("https", (ProtocolSocketFactory) new EasySSLProtocolSocketFactory(), 443);
-			client.getHostConfiguration().setHost(hostName, 443, easyHttps);
-			client.getHostConfiguration().setHost(hostName, 8443, easyHttps);
+//			// Configure for easy SSL (allow use of self-signed certificates)
+//			Protocol easyHttps = new Protocol("https", (ProtocolSocketFactory) new EasySSLProtocolSocketFactory(), 443);
+//			client.getHostConfiguration().setHost(hostName, 443, easyHttps);
+//
+//			Protocol easyHttps2 = new Protocol("https", (ProtocolSocketFactory) new EasySSLProtocolSocketFactory(), 8443);
+//			client.getHostConfiguration().setHost(hostName, 8443, easyHttps2);
 			
 			Result result = new Result();
 			
