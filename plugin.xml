@@ -5,11 +5,11 @@
    <extension
          point="org.eclipse.ui.commands">
       <category
-            name="Sample Category"
+            name="Marmoset Category"
             id="edu.ycp.cs.marmoset.uploader.commands.category">
       </category>
       <command
-            name="Sample Command"
+            name="Submit Project"
             categoryId="edu.ycp.cs.marmoset.uploader.commands.category"
             id="edu.ycp.cs.marmoset.uploader.commands.SubmitProjectCommand">
       </command>
@@ -21,34 +21,8 @@
             class="edu.ycp.cs.marmoset.uploader.handlers.SubmitProjectHandler">
       </handler>
    </extension>
-   <!--
-   <extension
-         point="org.eclipse.ui.bindings">
-      <key
-            commandId="edu.ycp.cs.marmoset.uploader.commands.SubmitProjectCommand"
-            contextId="org.eclipse.ui.contexts.window"
-            sequence="M1+6"
-            schemeId="org.eclipse.ui.defaultAcceleratorConfiguration">
-      </key>
-   </extension>
-   -->
    <extension
          point="org.eclipse.ui.menus">
-         <!--
-      <menuContribution
-            locationURI="menu:org.eclipse.ui.main.menu?after=additions">
-         <menu
-               label="Sample Menu"
-               mnemonic="M"
-               id="edu.ycp.cs.marmoset.uploader.menus.sampleMenu">
-            <command
-                  commandId="edu.ycp.cs.marmoset.uploader.commands.SubmitProjectCommand"
-                  mnemonic="S"
-                  id="edu.ycp.cs.marmoset.uploader.menus.SubmitProjectCommand">
-            </command>
-         </menu>
-      </menuContribution>
-      -->
       <menuContribution
             locationURI="toolbar:org.eclipse.ui.main.toolbar?after=additions">
          <toolbar
@@ -78,11 +52,6 @@
                   <iterate
                         ifEmpty="false"
                         operator="or">
-                        <!--
-                     <adapt
-                           type="org.eclipse.jdt.core.ICompilationUnit">
-                     </adapt>
-                     -->
                      <adapt
                            type="org.eclipse.core.resources.IProject">
                      </adapt>

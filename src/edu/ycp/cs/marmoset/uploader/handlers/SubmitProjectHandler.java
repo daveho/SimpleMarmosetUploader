@@ -14,6 +14,7 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
 import org.apache.commons.httpclient.HttpException;
+import org.apache.commons.httpclient.HttpStatus;
 import org.eclipse.core.commands.AbstractHandler;
 import org.eclipse.core.commands.ExecutionEvent;
 import org.eclipse.core.commands.ExecutionException;
@@ -24,6 +25,7 @@ import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.core.runtime.IPath;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.viewers.ISelection;
@@ -32,6 +34,7 @@ import org.eclipse.ui.ISelectionService;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.handlers.HandlerUtil;
 
+import edu.ycp.cs.marmoset.uploader.Activator;
 import edu.ycp.cs.marmoset.uploader.ui.UsernamePasswordDialog;
 
 /**
@@ -57,7 +60,7 @@ public class SubmitProjectHandler extends AbstractHandler {
 	 * the BlueJ upload servlet.
 	 */
 	static final Pattern SUBMIT_URL_PATTERN =
-		Pattern.compile("^(https?://([^/]+))/eclipse/SubmitProjectViaEclipse$");
+		Pattern.compile("^(https?://([^/]+))/.*$");
 
 	/**
 	 * The constructor.
@@ -154,7 +157,31 @@ public class SubmitProjectHandler extends AbstractHandler {
 			try {
 				Result result;
 				result = Uploader.sendZipFileToServer(submitProperties, zipFile, dialog.getUsername(), dialog.getPassword());
-				MessageDialog.openInformation(window.getShell(), "Upload result", result.responseBody);
+				
+				if (result.httpCode == HttpStatus.SC_OK) {
+					// Success!
+					MessageDialog.openInformation(window.getShell(), "Upload result", result.responseBody);
+				} else {
+					if (result.responseBody.contains("Wrong password")) {
+						MessageDialog.openError(
+								window.getShell(),
+								"Project submission failed",
+								"Project submission failed\nYour password was not recognized (did you mistype it?)");
+					} else if (result.responseBody.contains("Cannot find user")) {
+						MessageDialog.openError(
+								window.getShell(),
+								"Project submission failed",
+								"Project submission failed\nYour username was not recognized (did you mistype it?)");
+					} else {
+						MessageDialog.openError(
+								window.getShell(),
+								"Project submission failed",
+								"An error occurred while uploading your project. Sorry.");
+						// Log it.
+						Activator.getDefault().getLog().log(new Status(Status.ERROR, Activator.PLUGIN_ID, "Error submitting project: " + result.responseBody));
+					}
+				}
+				
 			} catch (HttpException e) {
 				MessageDialog.openError(window.getShell(), "Error uploading project", e.getMessage());
 			} catch (IOException e) {
