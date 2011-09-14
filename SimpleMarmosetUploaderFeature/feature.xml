@@ -2,7 +2,7 @@
 <feature
       id="edu.ycp.cs.marmoset.uploader.SimpleMarmosetUploaderFeature"
       label="SimpleMarmosetUploaderFeature"
-      version="1.0.2"
+      version="1.0.3"
       provider-name="YCP CS">
 
    <description>

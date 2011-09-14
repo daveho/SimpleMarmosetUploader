@@ -144,57 +144,72 @@ public class SubmitProjectHandler extends AbstractHandler {
 		File zipFile = null;
 		
 		try {
-			// Create zip file.
-			try {
-				zipFile = createZipFile(project);
-			} catch (IOException e) {
-				throw new ExecutionException("Could not create zip file of project", e);
-			} catch (CoreException e) {
-				throw new ExecutionException("Could not create zip file of project", e);
-			}
-			
-			//  Attempt the submission.
-			try {
-				Result result;
-				result = Uploader.sendZipFileToServer(submitProperties, zipFile, dialog.getUsername(), dialog.getPassword());
-				
-				if (result.httpCode == HttpStatus.SC_OK) {
-					// Success!
-					MessageDialog.openInformation(window.getShell(), "Upload result", result.responseBody);
-				} else {
-					if (result.responseBody.contains("Wrong password")) {
-						MessageDialog.openError(
-								window.getShell(),
-								"Project submission failed",
-								"Project submission failed\nYour password was not recognized (did you mistype it?)");
-					} else if (result.responseBody.contains("Cannot find user")) {
-						MessageDialog.openError(
-								window.getShell(),
-								"Project submission failed",
-								"Project submission failed\nYour username was not recognized (did you mistype it?)");
-					} else {
-						MessageDialog.openError(
-								window.getShell(),
-								"Project submission failed",
-								"An error occurred while uploading your project. Sorry.");
-						// Log it.
-						Activator.getDefault().getLog().log(new Status(Status.ERROR, Activator.PLUGIN_ID, "Error submitting project: " + result.responseBody));
-					}
-				}
-				
-			} catch (HttpException e) {
-				MessageDialog.openError(window.getShell(), "Error uploading project", e.getMessage());
-			} catch (IOException e) {
-				MessageDialog.openError(window.getShell(), "Error uploading project", e.getMessage());
-			}
+			zipFile = createZipFile(project);
+		} catch (IOException e) {
+//			throw new ExecutionException("Could not create zip file of project", e);
+			MessageDialog.openError(
+					window.getShell(),
+					"Error creating project zip file",
+					"Error creating a zip file of your project\n" + e.getMessage());
+			return null;
+		} catch (CoreException e) {
+//			throw new ExecutionException("Could not create zip file of project", e);
+			MessageDialog.openError(
+					window.getShell(),
+					"Error creating project zip file",
+					"Error creating a zip file of your project (try refreshing the project)\n\n" + e.getMessage());
+			return null;
+		}
+		
+		//  Attempt the submission.
+		try {
+			uploadToServer(window, submitProperties, dialog, zipFile);
+			return null;
 		} finally {
 			if (zipFile != null) {
 				// delete eagerly (even though we've marked it delete-on-exit)
 				zipFile.delete();
 			}
 		}
-		
-		return null;
+
+	}
+
+	public void uploadToServer(IWorkbenchWindow window,
+			Properties submitProperties, UsernamePasswordDialog dialog,
+			File zipFile) {
+		try {
+			Result result;
+			result = Uploader.sendZipFileToServer(submitProperties, zipFile, dialog.getUsername(), dialog.getPassword());
+			
+			if (result.httpCode == HttpStatus.SC_OK) {
+				// Success!
+				MessageDialog.openInformation(window.getShell(), "Upload result", result.responseBody);
+			} else {
+				if (result.responseBody.contains("Wrong password")) {
+					MessageDialog.openError(
+							window.getShell(),
+							"Project submission failed",
+							"Project submission failed\nYour password was not recognized (did you mistype it?)");
+				} else if (result.responseBody.contains("Cannot find user")) {
+					MessageDialog.openError(
+							window.getShell(),
+							"Project submission failed",
+							"Project submission failed\nYour username was not recognized (did you mistype it?)");
+				} else {
+					MessageDialog.openError(
+							window.getShell(),
+							"Project submission failed",
+							"An error occurred while uploading your project. Sorry.");
+					// Log it.
+					Activator.getDefault().getLog().log(new Status(Status.ERROR, Activator.PLUGIN_ID, "Error submitting project: " + result.responseBody));
+				}
+			}
+			
+		} catch (HttpException e) {
+			MessageDialog.openError(window.getShell(), "Error uploading project", e.getMessage());
+		} catch (IOException e) {
+			MessageDialog.openError(window.getShell(), "Error uploading project", e.getMessage());
+		}
 	}
 
 	private List<IProject> getSelectedProjects(IStructuredSelection selection) {

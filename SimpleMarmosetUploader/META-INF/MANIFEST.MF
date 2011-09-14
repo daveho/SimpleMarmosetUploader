@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: SimpleMarmosetUploader
 Bundle-SymbolicName: edu.ycp.cs.marmoset.uploader.SimpleMarmosetUploader;singleton:=true
-Bundle-Version: 1.0.2
+Bundle-Version: 1.0.3
 Bundle-Activator: edu.ycp.cs.marmoset.uploader.Activator
 Bundle-Vendor: YCP CS
 Require-Bundle: org.eclipse.ui,
