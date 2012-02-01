@@ -1,5 +1,6 @@
 package edu.ycp.cs.marmoset.uploader;
 
+import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.osgi.framework.BundleContext;
@@ -37,6 +38,16 @@ public class Activator extends AbstractUIPlugin {
 	public void stop(BundleContext context) throws Exception {
 		plugin = null;
 		super.stop(context);
+	}
+
+	/**
+	 * Send a message to the Eclipse log.
+	 * Useful for debugging.
+	 * 
+	 * @param msg  the message to send
+	 */
+	public static void logMessage(String msg) {
+		getDefault().getLog().log(new Status(Status.INFO, PLUGIN_ID, msg));
 	}
 
 	/**

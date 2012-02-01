@@ -56,11 +56,11 @@ public class SubmitProjectHandler extends AbstractHandler {
 
 	/**
 	 * Regex pattern matching the submit url in a .submit file.
-	 * All we care about is the hostname, since we will force submission via
+	 * All we care about is the hostname and context path, since we will force submission via
 	 * the BlueJ upload servlet.
 	 */
 	static final Pattern SUBMIT_URL_PATTERN =
-		Pattern.compile("^(https?://([^/]+))/.*$");
+		Pattern.compile("^(https?://([^/]+))(/.*)$");
 
 	/**
 	 * The constructor.
