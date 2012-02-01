@@ -2,7 +2,7 @@
 <feature
       id="edu.ycp.cs.marmoset.uploader.SimpleMarmosetUploaderFeature"
       label="SimpleMarmosetUploaderFeature"
-      version="1.0.3"
+      version="1.0.4"
       provider-name="YCP CS">
 
    <description>
@@ -10,7 +10,7 @@
    </description>
 
    <copyright>
-      (c) 2011 David H. Hovemeyer &lt;david.hovemeyer@gmail.com&gt;
+      (c) 2011-2012 David H. Hovemeyer &lt;david.hovemeyer@gmail.com&gt;
    </copyright>
 
    <license>
