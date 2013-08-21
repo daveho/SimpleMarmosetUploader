@@ -1,8 +1,11 @@
 A simple Eclipse plugin to submit projects to the Marmoset
 assignment submission and testing server.
 
-NOTE: it works with self-signed certificates *only* if the
-server is running on port 8443.
+NOTE: as of version 1.0.7, the plugin does NOT support
+self-signed SSL certificates.  Your Marmoset installation needs
+to be accessed through an SSL certificate to which a chain
+of trust can be established from the keystore included with
+the JRE that Eclipse is running in.
 
 More information about Marmoset:
 
