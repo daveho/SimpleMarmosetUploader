@@ -141,6 +141,10 @@ public class SubmitProjectHandler extends AbstractHandler {
 			return null; // canceled
 		}
 		
+		// Set the project number (i.e., inbox): if there were multiple possibilities,
+		// the UsernamePasswordDialog will have required the user to choose one
+		submitProperties.setProperty(PROP_PROJECT_NUMBER, dialog.getSelectedInbox());
+		
 		File zipFile = null;
 		
 		try {
