@@ -1,5 +1,5 @@
-SimpleMarmosetUploader/bin/*
-SimpleMarmosetUploaderUpdateSite/*.jar
-SimpleMarmosetUploaderUpdateSite/features/*
-SimpleMarmosetUploaderUpdateSite/plugins/*
-updateSite.zip
+/SimpleMarmosetUploader/bin
+/SimpleMarmosetUploaderUpdateSite/*.jar
+/SimpleMarmosetUploaderUpdateSite/features
+/SimpleMarmosetUploaderUpdateSite/plugins
+/updateSite.zip
