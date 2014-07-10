@@ -1,3 +1,9 @@
+// Simple Marmoset Uploader
+// Copyright (C) 2011-2014, David H. Hovemeyer <david.hovemeyer@gmail.com>
+//
+// Free software, distributed under the terms of the Apache License, version 2.0
+// See: http://www.apache.org/licenses/LICENSE-2.0.html
+
 package edu.ycp.cs.marmoset.uploader.handlers;
 
 import java.io.BufferedOutputStream;
@@ -13,8 +19,7 @@ import java.util.regex.Pattern;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
-import org.apache.commons.httpclient.HttpException;
-import org.apache.commons.httpclient.HttpStatus;
+import org.apache.http.HttpStatus;
 import org.eclipse.core.commands.AbstractHandler;
 import org.eclipse.core.commands.ExecutionEvent;
 import org.eclipse.core.commands.ExecutionException;
@@ -208,9 +213,6 @@ public class SubmitProjectHandler extends AbstractHandler {
 					Activator.getDefault().getLog().log(new Status(Status.ERROR, Activator.PLUGIN_ID, "Error submitting project: " + result.responseBody));
 				}
 			}
-			
-		} catch (HttpException e) {
-			MessageDialog.openError(window.getShell(), "Error uploading project", e.getMessage());
 		} catch (IOException e) {
 			MessageDialog.openError(window.getShell(), "Error uploading project", e.getMessage());
 		}

@@ -1,21 +1,26 @@
+// Simple Marmoset Uploader
+// Copyright (C) 2011-2014, David H. Hovemeyer <david.hovemeyer@gmail.com>
+//
+// Free software, distributed under the terms of the Apache License, version 2.0
+// See: http://www.apache.org/licenses/LICENSE-2.0.html
+
 package edu.ycp.cs.marmoset.uploader.handlers;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Dictionary;
-import java.util.List;
 import java.util.Properties;
 import java.util.regex.Matcher;
 
-import org.apache.commons.httpclient.HttpClient;
-import org.apache.commons.httpclient.HttpException;
-import org.apache.commons.httpclient.methods.PostMethod;
-import org.apache.commons.httpclient.methods.multipart.FilePart;
-import org.apache.commons.httpclient.methods.multipart.MultipartRequestEntity;
-import org.apache.commons.httpclient.methods.multipart.Part;
-import org.apache.commons.httpclient.methods.multipart.StringPart;
-import org.apache.commons.httpclient.params.HttpMethodParams;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.mime.HttpMultipartMode;
+import org.apache.http.entity.mime.MultipartEntity;
+import org.apache.http.entity.mime.content.FileBody;
+import org.apache.http.entity.mime.content.StringBody;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.util.EntityUtils;
 
 import edu.ycp.cs.marmoset.uploader.Activator;
 
@@ -23,9 +28,7 @@ public abstract class Uploader {
 	private static final String SUBMIT_PROJECT_VIA_BLUE_J_SUBMITTER = "/bluej/SubmitProjectViaBlueJSubmitter";
 	private static final String SUBMIT_PROJECT_VIA_ECLIPSE = "/eclipse/SubmitProjectViaEclipse";
 
-	public static Result sendZipFileToServer(Properties submitProperties, File zipFile, String username, String password) throws HttpException, IOException {
-		PostMethod post = null;
-		HttpClient client = null;
+	public static Result sendZipFileToServer(Properties submitProperties, File zipFile, String username, String password) throws IOException {
 		
 		String submitUrl = submitProperties.getProperty(SubmitProjectHandler.PROP_SUBMIT_URL);
 		Matcher m = SubmitProjectHandler.SUBMIT_URL_PATTERN.matcher(submitUrl);
@@ -58,18 +61,20 @@ public abstract class Uploader {
 		String url = proto + "//" + hostName + portNumber + resourceName;
 //		Activator.logMessage("url: " + url);
 		
+		HttpPost post = null;
+		HttpClient client = null;
 		try {
-			post = new PostMethod(url);
+			post = new HttpPost(url);
 			
-			post.getParams().setBooleanParameter(HttpMethodParams.USE_EXPECT_CONTINUE, true);
+			// See:
+			// http://stackoverflow.com/questions/18733562/how-to-sending-multipart-form-data-post-request-in-with-use-of-apache-httpcompon
 			
-			List<Part> parts = new ArrayList<Part>();
+			MultipartEntity entity = new MultipartEntity(HttpMultipartMode.BROWSER_COMPATIBLE);
 			
-			// Add form parameters
-			parts.add(new StringPart("campusUID", username));
-			parts.add(new StringPart("password", password));
-			parts.add(new StringPart("submitClientTool", "SimpleMarmosetUploader"));
-			
+			entity.addPart("campusUID", new StringBody(username));
+			entity.addPart("password", new StringBody(password));
+			entity.addPart("submitClientTool", new StringBody("SimpleMarmosetUploader"));
+
 			// You'd think getting the version of an Eclipse plugin would be easy,
 			// but it's not.
 			Dictionary<?, ?> dictionary = Activator.getDefault().getBundle().getHeaders();
@@ -77,35 +82,36 @@ public abstract class Uploader {
 			if (pluginVersion == null) {
 				pluginVersion = "unknown";
 			}
-			parts.add(new StringPart("submitClientVersion", pluginVersion));
+			entity.addPart("submitClientVersion", new StringBody(pluginVersion));
 			
 			// All submit properties except the submit URL must be added as parameters
 			for (String prop : SubmitProjectHandler.REQUIRED_PROPERTIES) {
 				if (!prop.equals(SubmitProjectHandler.PROP_SUBMIT_URL)) {
-					parts.add(new StringPart(prop, submitProperties.getProperty(prop)));
+					entity.addPart(prop, new StringBody(submitProperties.getProperty(prop)));
 				}
 			}
 			
 			// Add the file part
-			parts.add(new FilePart("submittedFiles", zipFile));
-			MultipartRequestEntity entity = new MultipartRequestEntity(parts.toArray(new Part[parts.size()]), post.getParams());
-			post.setRequestEntity(entity);
+			entity.addPart("submittedFiles", new FileBody(zipFile, "application/zip"));
+			
+			// Add the MultipartEntity to the POST request
+			post.setEntity(entity);
 
 			// Execute the request!
-			client = new HttpClient();
+			client = new DefaultHttpClient();
+
+			// Return the result
+			HttpResponse response = client.execute(post);
 			Result result = new Result();
-			result.httpCode = client.executeMethod(post);
-			result.responseBody = post.getResponseBodyAsString();
+			result.httpCode = response.getStatusLine().getStatusCode();
+			result.responseBody = EntityUtils.toString(response.getEntity());
 			
 			return result;
 		} finally {
-			if (post != null) {
-				post.releaseConnection();
-			}
+			// Shut down httpclient
 			if (client != null) {
-				client.getHttpConnectionManager().closeIdleConnections(0L);
+				client.getConnectionManager().shutdown();
 			}
-			
 		}
 	}
 }
