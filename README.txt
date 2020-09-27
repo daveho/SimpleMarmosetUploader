@@ -21,4 +21,4 @@ More information about Marmoset:
 
   http://marmoset.cs.umd.edu/
 
-Feedback to dhovemey@ycp.edu
+Feedback to david.hovemeyer@gmail.com
